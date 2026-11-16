@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UJI COBA TES KEMAMPUAN AKADEMIK (TKA) 2027</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Font spesifik sesuai permintaan */
+        .font-header {
+            font-family: 'Arial Nova Cond', 'Arial Narrow', Arial, sans-serif;
+        }
+        
+        /* Font Arial 11pt (~14.6px) untuk stimulus, soal, dan opsi */
+        .font-arial-11 {
+            font-family: Arial, sans-serif;
+            font-size: 14.6px;
+            line-height: 1.6;
+        }
+
+        /* Font Arial 8pt (~10.6px) untuk sumber stimulus */
+        .font-arial-8 {
+            font-family: Arial, sans-serif;
+            font-size: 10.6px;
+        }
+
+        /* Styling opsi Pilihan Ganda (Bulat berhuruf A/B/C/D) */
+        .radio-circle {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid #9CA3AF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 13px;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+        .option-radio-input:checked + .option-box .radio-circle {
+            background-color: #2563EB;
+            color: white;
+            border-color: #2563EB;
+        }
+        .option-radio-input:checked + .option-box {
+            border-color: #2563EB;
+            background-color: #EFF6FF;
+        }
+
+        /* Styling opsi MCMA (Kotak dengan centang) */
+        .checkbox-square {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            border: 2px solid #9CA3AF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+            color: transparent;
+        }
+        .option-checkbox-input:checked + .option-box .checkbox-square {
+            background-color: #2563EB;
+            color: white;
+            border-color: #2563EB;
+        }
+        .option-checkbox-input:checked + .option-box {
+            border-color: #2563EB;
+            background-color: #EFF6FF;
+        }
+
+        /* Custom radio di tabel kategori */
+        .table-radio-box {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid #9CA3AF;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .table-radio-input:checked + .table-radio-box {
+            background-color: #2563EB;
+            border-color: #2563EB;
+            color: white;
+        }
+
+        /* Sembunyikan scrollbar bawaan pada panel jika diinginkan namun tetap dapat di-scroll */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background-color: #CBD5E1;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col relative select-none">
+
+    <!-- ================= HALAMAN UTAMA / LOGIN ================= -->
+    <div id="page-start" class="min-h-screen flex flex-col justify-between p-4 md:p-8">
+        <div class="max-w-xl w-full mx-auto bg-white rounded-xl shadow-md border border-gray-200 p-6 md:p-8 my-auto">
+            <!-- Judul Halaman Depan -->
+            <div class="text-center font-header mb-8 border-b pb-4">
+                <h1 class="text-2xl md:text-3xl font-bold tracking-wide text-gray-900 leading-tight">
+                    UJI COBA TES KEMAMPUAN AKADEMIK (TKA)
+                </h1>
+                <h2 class="text-xl md:text-2xl font-bold tracking-wide text-blue-800 mt-1">
+                    UPT SD NEGERI PRAMBONWETAN
+                </h2>
+                <h3 class="text-lg md:text-xl font-bold tracking-wider text-gray-700 mt-1">
+                    TAHUN 2027
+                </h3>
+            </div>
+
+            <!-- Form Identitas Siswa -->
+            <form id="form-login" onsubmit="handleStartExam(event)" class="space-y-4">
+                <div>
+                    <label class="block font-semibold text-gray-700 mb-1">Nama Lengkap</label>
+                    <input type="text" id="input-nama" required placeholder="Masukkan Nama Lengkap"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block font-semibold text-gray-700 mb-1">NISN</label>
+                    <input type="text" id="input-nisn" required placeholder="Masukkan NISN" pattern="[0-9]+" title="NISN harus berupa angka"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block font-semibold text-gray-700 mb-1">Token</label>
+                    <input type="text" id="input-token" required placeholder="Masukkan Token (Contoh: LAURA514)"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none uppercase">
+                </div>
+
+                <!-- Pesan Error Token -->
+                <div id="token-error" class="hidden p-3 bg-red-100 border-l-4 border-red-500 text-red-700 text-sm rounded">
+                    Maaf, token yang Anda masukkan salah. Silakan ulangi Kembali.
+                </div>
+
+                <button type="submit" 
+                        class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-md transition duration-200">
+                    MASUK UJIAN
+                </button>
+            </form>
+        </div>
+
+        <!-- Watermark Pojok Kanan Bawah -->
+        <div class="text-right text-xs text-gray-500 font-semibold mt-4">
+            Dibuat oleh: Sun Anika
+        </div>
+    </div>
+
+
+    <!-- ================= MODAL PETUNJUK PENGERJAAN ================= -->
+    <div id="modal-instruction" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 md:p-8 flex flex-col justify-between relative animate-fade-in">
+            <div>
+                <h3 class="text-xl font-bold text-gray-900 border-b pb-3 mb-4 text-center">Konfirmasi Data & Petunjuk Pengerjaan</h3>
+                
+                <!-- Data Peserta -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-5">
+                    <p class="text-sm text-gray-600">Nama Peserta: <span id="confirm-nama" class="font-bold text-blue-900"></span></p>
+                    <p class="text-sm text-gray-600 mt-1">NISN: <span id="confirm-nisn" class="font-bold text-blue-900"></span></p>
+                </div>
+
+                <!-- Petunjuk Pengerjaan -->
+                <div class="space-y-3 font-arial-11 text-gray-700">
+                    <p class="font-bold text-gray-900">Petunjuk Pengerjaan:</p>
+                    <ol class="list-decimal pl-5 space-y-2">
+                        <li>Soal terdiri dari 3 butir soal dengan waktu mengerjakan maksimal 10 menit.</li>
+                        <li>Periksa Kembali jawaban Anda. Pastikan Anda menjawab dengan benar.</li>
+                    </ol>
+                    <p class="font-bold text-blue-600 text-center mt-4 text-lg">Selamat mengerjakan!</p>
+                </div>
+            </div>
+
+            <!-- Tombol Konfirmasi -->
+            <div class="mt-8 flex justify-end">
+                <button onclick="startQuiz()" 
+                        class="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-3 rounded-lg shadow-md transition duration-200 text-sm md:text-base">
+                    Saya Mengerti, Saya Siap Mengerjakan
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================= HALAMAN SOAL (CBT INTERFACE) ================= -->
+    <div id="page-quiz" class="hidden flex-col h-screen max-h-screen overflow-hidden bg-gray-100">
+        <!-- Top Navigation Header -->
+        <header class="bg-white border-b border-gray-300 px-4 py-3 flex justify-between items-center shadow-sm">
+            <div>
+                <h1 class="font-bold text-blue-900 text-base md:text-lg">UJI COBA TKA 2027 - SD NEGERI PRAMBONWETAN</h1>
+                <p id="quiz-user-info" class="text-xs text-gray-500 font-semibold"></p>
+            </div>
+
+            <!-- Timer Countdown -->
+            <div class="flex items-center space-x-2 bg-red-50 border border-red-200 px-3 py-1.5 rounded-lg">
+                <span class="text-xs text-red-500 font-bold uppercase">Sisa Waktu:</span>
+                <span id="timer-display" class="font-mono font-bold text-red-600 text-base md:text-lg">10:00</span>
+            </div>
+        </header>
+
+        <!-- Main Body Area -->
+        <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
+            <!-- Left Side: Stimulus + Question Text -->
+            <main class="flex-1 flex flex-col p-4 md:p-6 overflow-y-auto custom-scroll bg-white md:mr-2 shadow-inner">
+                
+                <!-- Stimulus Bacaan -->
+                <div class="bg-amber-50/50 border border-amber-200 rounded-xl p-4 md:p-5 mb-5 font-arial-11 text-gray-800 shadow-sm">
+                    <h4 class="font-bold text-amber-900 mb-2 border-b border-amber-200 pb-1">Keindahan Pantai Kuta</h4>
+                    <p class="mb-2">Bali adalah destinasi wisata populer Indonesia. Pulau ini menyimpan banyak keindahan. Salah satunya adalah Pantai Kuta. Pantai Kuta terletak di selatan Bali. Tempat ini sangat terkenal di dunia. Banyak wisatawan mengunjungi Pantai Kuta. Wisatawan lokal menyukai pantai ini. Wisatawan mancanegara juga datang ke sini.</p>
+                    <p class="mb-2">Pantai Kuta memiliki daya tarik khusus. Pasir pantainya berwarna putih bersih. Lautnya membentang dengan sangat luas. Ombak di sini cukup besar. Air lautnya terlihat sangat jernih. Banyak peselancar bermain di laut. Ombak Kuta cocok untuk berselancar. Peselancar pemula menyukai ombak ini. Mereka berlatih selancar setiap hari.</p>
+                    <p class="mb-2">Suasana Pantai Kuta sangat menyenangkan. Pengunjung menikmati pemandangan di pantai. Anak-anak bermain pasir di tepi. Matahari terbenam terlihat indah sekali. Pemandangan sore hari sangat mempesona. Sektor pariwisata mendukung ekonomi Bali.</p>
+                    <p class="mb-3">Kita wajib menjaga kebersihan pantai. Pengunjung tidak boleh membuang sampah. Lingkungan alam harus selalu lestari. Keindahan Pantai Kuta terus terjaga.</p>
+                    
+                    <!-- Sumber Stimulus (Font Arial 8pt miring, link biru) -->
+                    <p class="font-arial-8 italic text-gray-600">
+                        Sumber: <a href="https://www.indonesia.travel/id/id/destination/bali-nusa-tenggara/bali/bali" target="_blank" rel="noopener noreferrer" class="text-blue-700 underline hover:text-blue-900">https://www.indonesia.travel/id/id/destination/bali-nusa-tenggara/bali/bali</a>
+                    </p>
+                </div>
+
+                <!-- Pokok Soal & Opsi Jawaban Container -->
+                <div class="font-arial-11 text-gray-900 space-y-4">
+                    <div class="flex items-start space-x-2">
+                        <span id="question-number-title" class="font-bold text-blue-800">Soal 1:</span>
+                        <div id="question-stem" class="font-medium text-gray-800 leading-relaxed"></div>
+                    </div>
+
+                    <!-- Container Opsi Jawaban (Dinamis berdasarkan jenis soal) -->
+                    <div id="options-container" class="mt-4 space-y-3 pt-2">
+                        <!-- Opsi akan dimasukkan via JS -->
+                    </div>
+                </div>
+            </main>
+
+            <!-- Right Side: Navigation Panel -->
+            <aside class="w-full md:w-72 bg-gray-50 border-t md:border-t-0 md:border-l border-gray-300 p-4 flex flex-col justify-between">
+                <div>
+                    <h3 class="font-bold text-gray-700 mb-3 text-center md:text-left text-sm uppercase tracking-wider">Navigasi Soal</h3>
+                    
+                    <!-- Tombol Nomor Soal 1 s.d. 3 -->
+                    <div class="grid grid-cols-3 gap-3 mb-4" id="nav-buttons-container">
+                        <button onclick="goToQuestion(1)" id="nav-btn-1" class="py-3 font-bold rounded-lg border-2 text-sm shadow-sm transition">1</button>
+                        <button onclick="goToQuestion(2)" id="nav-btn-2" class="py-3 font-bold rounded-lg border-2 text-sm shadow-sm transition">2</button>
+                        <button onclick="goToQuestion(3)" id="nav-btn-3" class="py-3 font-bold rounded-lg border-2 text-sm shadow-sm transition">3</button>
+                    </div>
+
+                    <!-- Keterangan Warna Navigasi -->
+                    <div class="space-y-1.5 text-xs text-gray-600 bg-white p-3 rounded-lg border border-gray-200">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3.5 h-3.5 bg-green-500 rounded-sm inline-block"></span>
+                            <span>Sudah Dikerjakan</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3.5 h-3.5 bg-amber-400 rounded-sm inline-block"></span>
+                            <span>Ragu-ragu</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3.5 h-3.5 bg-gray-200 border border-gray-400 rounded-sm inline-block"></span>
+                            <span>Belum Dikerjakan</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3.5 h-3.5 border-2 border-blue-600 rounded-sm inline-block"></span>
+                            <span>Halaman Aktif</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tombol Navigasi Bawah (Lewati, Ragu-ragu, Selesai) -->
+                <div class="mt-4 pt-4 border-t border-gray-300 space-y-2">
+                    <div class="flex space-x-2">
+                        <button onclick="toggleDoubtful()" id="btn-doubt" 
+                                class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-3 rounded-lg text-xs md:text-sm shadow transition text-center">
+                            Ragu-ragu
+                        </button>
+                        <button onclick="nextQuestion()" id="btn-next" 
+                                class="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-2.5 px-3 rounded-lg text-xs md:text-sm shadow transition text-center">
+                            Lewati
+                        </button>
+                    </div>
+
+                    <!-- Tombol Selesai (Hanya di Soal Terakhir / 3) -->
+                    <button onclick="confirmFinish()" id="btn-finish" 
+                            class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg text-sm shadow-md transition text-center hidden">
+                        Selesai
+                    </button>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+
+    <!-- ================= HALAMAN HASIL / NILA ================= -->
+    <div id="page-result" class="hidden min-h-screen flex flex-col justify-between p-4 md:p-8 bg-gray-100">
+        <div class="max-w-xl w-full mx-auto bg-white rounded-xl shadow-lg border border-gray-200 p-6 md:p-8 my-auto text-center">
+            
+            <div class="mb-6">
+                <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-900">Selamat!</h2>
+                <p class="text-gray-600 text-sm md:text-base mt-2">
+                    Anda telah menyelesaikan <span class="font-bold text-gray-800">Uji Coba Tes Kemampuan Akademik (TKA)</span>.
+                </p>
+            </div>
+
+            <!-- Detail Peserta & Nilai -->
+            <div class="bg-gray-50 border border-gray-200 rounded-xl p-5 mb-6 text-left space-y-2">
+                <div class="flex justify-between border-b pb-2 text-sm">
+                    <span class="text-gray-500">Nama:</span>
+                    <span id="result-nama" class="font-bold text-gray-800"></span>
+                </div>
+                <div class="flex justify-between border-b pb-2 text-sm">
+                    <span class="text-gray-500">NISN:</span>
+                    <span id="result-nisn" class="font-bold text-gray-800"></span>
+                </div>
+                <div class="flex justify-between text-sm pt-1">
+                    <span class="text-gray-500">Sekolah:</span>
+                    <span class="font-bold text-gray-800">UPT SD NEGERI PRAMBONWETAN</span>
+                </div>
+            </div>
+
+            <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 mb-6">
+                <p class="text-sm font-bold text-blue-800 uppercase tracking-wide">Nilai yang Anda Dapatkan Adalah:</p>
+                <div id="result-score" class="text-5xl md:text-6xl font-extrabold text-blue-600 my-2">
+                    0.00
+                </div>
+                <p id="result-detail" class="text-xs text-gray-500 mt-1"></p>
+            </div>
+
+            <button onclick="location.reload()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow transition text-sm">
+                Kembali ke Halaman Depan
+            </button>
+        </div>
+
+        <div class="text-right text-xs text-gray-500 font-semibold mt-4">
+            Dibuat oleh: Sun Anika
+        </div>
+    </div>
+
+
+    <!-- ================= SCRIPT LOGIKA APLIKASI ================= -->
+    <script>
+        // --- Data Ujian & User State ---
+        let userData = {
+            nama: '',
+            nisn: '',
+            token: ''
+        };
+
+        let currentQuestion = 1;
+        let timerInterval = null;
+        let timeLeft = 600; // 10 menit = 600 detik
+
+        // Status Jawaban Siswa
+        // answers: simpan nilai jawaban
+        // doubtful: boolean per nomor
+        let studentAnswers = {
+            1: null,        // String: 'A', 'B', 'C', atau 'D'
+            2: [],          // Array: ['A', 'B'], dst.
+            3: { 1: null, 2: null, 3: null } // Object: {1: 'Benar'/'Salah', 2: ..., 3: ...}
+        };
+
+        let doubtfulState = {
+            1: false,
+            2: false,
+            3: false
+        };
+
+        // Kunci Jawaban Resmi
+        const answerKeys = {
+            1: 'B',
+            2: ['A', 'B'],
+            3: { 1: 'Benar', 2: 'Salah', 3: 'Benar' }
+        };
+
+        // Database Soal
+        const questionsData = [
+            {
+                number: 1,
+                type: 'PG', // Pilihan Ganda (Single)
+                stem: 'Perhatikan kutipan kalimat dari paragraf pertama berikut!<br><i class="block my-1 text-gray-700">"Banyak wisatawan mengunjungi Pantai Kuta."</i><br>Kata <b>wisatawan</b> pada kalimat di atas merupakan kosakata khusus dalam bidang pariwisata. Arti yang tepat dari kata tersebut adalah ...',
+                options: [
+                    { id: 'A', text: 'Orang yang bertugas menjaga kebersihan tempat liburan' },
+                    { id: 'B', text: 'Orang yang sedang melakukan perjalanan untuk berlibur' },
+                    { id: 'C', text: 'Orang yang tinggal dan menetap lama di daerah pesisir' },
+                    { id: 'D', text: 'Orang yang bekerja menjual barang di area pesisir pantai' }
+                ]
+            },
+            {
+                number: 2,
+                type: 'MCMA', // Multiple Choice Multiple Answer
+                stem: 'Berdasarkan paragraf kedua, manakah informasi tersurat yang sesuai dengan isi teks?<br><span class="text-blue-700 font-normal italic text-xs">(Pilihlah dua jawaban yang tepat!)</span>',
+                options: [
+                    { id: 'A', text: 'Kondisi ombak di Pantai Kuta sangat sesuai untuk kegiatan berselancar.' },
+                    { id: 'B', text: 'Pasir di Pantai Kuta berwarna putih dan kondisi air lautnya sangat jernih.' },
+                    { id: 'C', text: 'Kebersihan Pantai Kuta selalu dijaga agar lingkungan alam tetap lestari.' }
+                ]
+            },
+            {
+                number: 3,
+                type: 'KATEGORI', // Tabel Kategori Benar - Salah
+                stem: 'Tentukan apakah pernyataan berikut sesuai atau tidak sesuai dengan amanat yang disampaikan oleh penulis dalam teks di atas!',
+                statements: [
+                    { id: 1, text: 'Kita hendaknya selalu menjaga kelestarian pantai dengan tidak membuang sampah sembarangan.' },
+                    { id: 2, text: 'Kita harus membatasi wisatawan asing agar Pantai Kuta tidak mengalami kerusakan lingkungan.' },
+                    { id: 3, text: 'Kita perlu merawat keindahan tempat wisata alam agar dapat terus dinikmati oleh masyarakat.' }
+                ]
+            }
+        ];
+
+        // --- 1. Fungsi Halaman Login & Token ---
+        function handleStartExam(e) {
+            e.preventDefault();
+            const nama = document.getElementById('input-nama').value.trim();
+            const nisn = document.getElementById('input-nisn').value.trim();
+            const token = document.getElementById('input-token').value.trim().toUpperCase();
+
+            // Validasi Token
+            if (token !== 'LAURA514') {
+                document.getElementById('token-error').classList.remove('hidden');
+                return;
+            }
+
+            document.getElementById('token-error').classList.add('hidden');
+            userData.nama = nama;
+            userData.nisn = nisn;
+            userData.token = token;
+
+            // Tampilkan Modal Petunjuk Pengerjaan
+            document.getElementById('confirm-nama').innerText = nama;
+            document.getElementById('confirm-nisn').innerText = nisn;
+            document.getElementById('modal-instruction').classList.remove('hidden');
+        }
+
+        // --- 2. Fungsi Memulai Ujian & Timer ---
+        function startQuiz() {
+            document.getElementById('modal-instruction').classList.add('hidden');
+            document.getElementById('page-start').classList.add('hidden');
+            document.getElementById('page-quiz').classList.remove('hidden');
+            document.getElementById('page-quiz').classList.add('flex');
+
+            document.getElementById('quiz-user-info').innerText = `${userData.nama} (${userData.nisn})`;
+
+            // Jalankan Timer 10 Menit
+            startTimer();
+
+            // Render Soal Pertama
+            renderQuestion(1);
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                let minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+
+                minutes = minutes < 10 ? '0' + minutes : minutes;
+                seconds = seconds < 10 ? '0' + seconds : seconds;
+
+                document.getElementById('timer-display').innerText = `${minutes}:${seconds}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert("Waktu pengerjaan telah habis! Jawaban Anda akan otomatis dikirim.");
+                    finishQuiz();
+                }
+            }, 1000);
+        }
+
+        // --- 3. Render Soal & Opsi ---
+        function renderQuestion(qNum) {
+            currentQuestion = qNum;
+            const qData = questionsData.find(q => q.number === qNum);
+            
+            // Set Header Soal
+            document.getElementById('question-number-title').innerText = `Soal ${qNum}:`;
+            document.getElementById('question-stem').innerHTML = qData.stem;
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            // Render Berdasarkan Jenis Soal
+            if (qData.type === 'PG') {
+                // Pilihan Ganda biasa
+                qData.options.forEach(opt => {
+                    const isChecked = studentAnswers[qNum] === opt.id ? 'checked' : '';
+                    const html = `
+                        <label class="relative block cursor-pointer">
+                            <input type="radio" name="q_${qNum}" value="${opt.id}" ${isChecked} 
+                                   onchange="savePGAnswer('${opt.id}')" class="option-radio-input sr-only">
+                            <div class="option-box flex items-center p-3 rounded-lg border-2 border-gray-200 hover:border-blue-300 bg-white transition shadow-sm">
+                                <div class="radio-circle mr-3">${opt.id}</div>
+                                <div class="font-arial-11 text-gray-800">${opt.text}</div>
+                            </div>
+                        </label>
+                    `;
+                    container.innerHTML += html;
+                });
+            } else if (qData.type === 'MCMA') {
+                // Multiple Choice Multiple Answer (Kotak Centang)
+                qData.options.forEach(opt => {
+                    const isChecked = (studentAnswers[qNum] || []).includes(opt.id) ? 'checked' : '';
+                    const html = `
+                        <label class="relative block cursor-pointer">
+                            <input type="checkbox" name="q_${qNum}" value="${opt.id}" ${isChecked} 
+                                   onchange="saveMCMAAnswer('${opt.id}')" class="option-checkbox-input sr-only">
+                            <div class="option-box flex items-center p-3 rounded-lg border-2 border-gray-200 hover:border-blue-300 bg-white transition shadow-sm">
+                                <div class="checkbox-square mr-3">✓</div>
+                                <div class="font-arial-11 text-gray-800">${opt.text}</div>
+                            </div>
+                        </label>
+                    `;
+                    container.innerHTML += html;
+                });
+            } else if (qData.type === 'KATEGORI') {
+                // Tabel Pernyataan (Benar / Salah)
+                let tableHtml = `
+                    <div class="overflow-x-auto border border-gray-300 rounded-lg shadow-sm">
+                        <table class="w-full text-left font-arial-11 border-collapse bg-white">
+                            <thead>
+                                <tr class="bg-blue-50 border-b border-gray-300 text-blue-900">
+                                    <th class="p-3 border-r border-gray-300 w-12 text-center">No.</th>
+                                    <th class="p-3 border-r border-gray-300">Pernyataan Amanat Teks</th>
+                                    <th class="p-3 border-r border-gray-300 w-24 text-center">Benar</th>
+                                    <th class="p-3 w-24 text-center">Salah</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                qData.statements.forEach((stmt, idx) => {
+                    const currentVal = studentAnswers[qNum][stmt.id];
+                    const isBenar = currentVal === 'Benar' ? 'checked' : '';
+                    const isSalah = currentVal === 'Salah' ? 'checked' : '';
+
+                    tableHtml += `
+                        <tr class="${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'} border-b border-gray-200 hover:bg-blue-50/30">
+                            <td class="p-3 border-r border-gray-200 text-center font-bold">${stmt.id}.</td>
+                            <td class="p-3 border-r border-gray-200 text-gray-800">${stmt.text}</td>
+                            <td class="p-3 border-r border-gray-200 text-center">
+                                <label class="inline-flex items-center cursor-pointer p-1">
+                                    <input type="radio" name="kat_${stmt.id}" value="Benar" ${isBenar}
+                                           onchange="saveKategoriAnswer(${stmt.id}, 'Benar')" class="table-radio-input sr-only">
+                                    <div class="table-radio-box">✓</div>
+                                </label>
+                            </td>
+                            <td class="p-3 text-center">
+                                <label class="inline-flex items-center cursor-pointer p-1">
+                                    <input type="radio" name="kat_${stmt.id}" value="Salah" ${isSalah}
+                                           onchange="saveKategoriAnswer(${stmt.id}, 'Salah')" class="table-radio-input sr-only">
+                                    <div class="table-radio-box">✓</div>
+                                </label>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                tableHtml += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                container.innerHTML = tableHtml;
+            }
+
+            // Update Tampilan Tombol Navigasi dan Status Ragu
+            updateNavButtonsUI();
+        }
+
+        // --- 4. Fungsi Penyimpanan Jawaban Otomatis ---
+        function savePGAnswer(val) {
+            studentAnswers[currentQuestion] = val;
+            updateNavButtonsUI();
+        }
+
+        function saveMCMAAnswer(val) {
+            let currentList = studentAnswers[currentQuestion] || [];
+            if (currentList.includes(val)) {
+                currentList = currentList.filter(item => item !== val);
+            } else {
+                currentList.push(val);
+            }
+            studentAnswers[currentQuestion] = currentList;
+            updateNavButtonsUI();
+        }
+
+        function saveKategoriAnswer(stmtId, val) {
+            studentAnswers[currentQuestion][stmtId] = val;
+            updateNavButtonsUI();
+        }
+
+        // --- 5. Logika Ragu-Ragu & Navigasi ---
+        function toggleDoubtful() {
+            doubtfulState[currentQuestion] = !doubtfulState[currentQuestion];
+            updateNavButtonsUI();
+        }
+
+        function isQuestionAnswered(qNum) {
+            const ans = studentAnswers[qNum];
+            if (qNum === 1) {
+                return ans !== null;
+            } else if (qNum === 2) {
+                return Array.isArray(ans) && ans.length > 0;
+            } else if (qNum === 3) {
+                return ans[1] !== null || ans[2] !== null || ans[3] !== null;
+            }
+            return false;
+        }
+
+        function updateNavButtonsUI() {
+            // Update UI 3 Nomor Soal di Navigasi Kanan
+            for (let i = 1; i <= 3; i++) {
+                const btn = document.getElementById(`nav-btn-${i}`);
+                const answered = isQuestionAnswered(i);
+                const isDoubt = doubtfulState[i];
+                const isActive = i === currentQuestion;
+
+                // Reset kelas dasar
+                btn.className = "py-3 font-bold rounded-lg border-2 text-sm shadow-sm transition ";
+
+                if (isActive) {
+                    btn.classList.add("border-blue-600", "ring-2", "ring-blue-300");
+                } else {
+                    btn.classList.add("border-transparent");
+                }
+
+                // Warna Latar Belakang Status
+                if (isDoubt) {
+                    btn.classList.add("bg-amber-400", "text-white");
+                } else if (answered) {
+                    btn.classList.add("bg-green-500", "text-white");
+                } else {
+                    btn.classList.add("bg-gray-200", "text-gray-700", "border-gray-300");
+                }
+            }
+
+            // Update Status Tombol Ragu-ragu
+            const btnDoubt = document.getElementById('btn-doubt');
+            if (doubtfulState[currentQuestion]) {
+                btnDoubt.classList.remove("bg-amber-500", "hover:bg-amber-600");
+                btnDoubt.classList.add("bg-amber-700", "ring-2", "ring-amber-300");
+                btnDoubt.innerText = "✓ Ragu-ragu";
+            } else {
+                btnDoubt.classList.remove("bg-amber-700", "ring-2", "ring-amber-300");
+                btnDoubt.classList.add("bg-amber-500", "hover:bg-amber-600");
+                btnDoubt.innerText = "Ragu-ragu";
+            }
+
+            // Atur Visibilitas Tombol Selesai
+            const btnFinish = document.getElementById('btn-finish');
+            if (currentQuestion === 3) {
+                btnFinish.classList.remove('hidden');
+            } else {
+                btnFinish.classList.add('hidden');
+            }
+        }
+
+        function goToQuestion(qNum) {
+            renderQuestion(qNum);
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < 3) {
+                goToQuestion(currentQuestion + 1);
+            } else {
+                goToQuestion(1); // Kembali ke nomor 1 jika di akhir
+            }
+        }
+
+        // --- 6. Perhitungan Nilai & Selesai ---
+        function confirmFinish() {
+            const confirmed = confirm("Apakah Anda yakin ingin menyelesaikan Uji Coba Tes Kemampuan Akademik ini?");
+            if (confirmed) {
+                finishQuiz();
+            }
+        }
+
+        function finishQuiz() {
+            if (timerInterval) clearInterval(timerInterval);
+
+            let correctCount = 0;
+
+            // Evaluasi Soal 1 (PG)
+            if (studentAnswers[1] === answerKeys[1]) {
+                correctCount++;
+            }
+
+            // Evaluasi Soal 2 (MCMA: Harus Tepat A dan B)
+            const userQ2 = (studentAnswers[2] || []).sort().join(',');
+            const keyQ2 = answerKeys[2].sort().join(',');
+            if (userQ2 === keyQ2) {
+                correctCount++;
+            }
+
+            // Evaluasi Soal 3 (Kategori: 3 Pernyataan Harus Benar Semua)
+            const userQ3 = studentAnswers[3];
+            const keyQ3 = answerKeys[3];
+            if (
+                userQ3[1] === keyQ3[1] &&
+                userQ3[2] === keyQ3[2] &&
+                userQ3[3] === keyQ3[3]
+            ) {
+                correctCount++;
+            }
+
+            // Perhitungan Nilai: (Jumlah Benar x 100) / 3 dengan 2 desimal
+            const finalScore = ((correctCount * 100) / 3).toFixed(2);
+
+            // Tampilkan Halaman Hasil
+            document.getElementById('page-quiz').classList.add('hidden');
+            document.getElementById('page-quiz').classList.remove('flex');
+            document.getElementById('page-result').classList.remove('hidden');
+
+            document.getElementById('result-nama').innerText = userData.nama;
+            document.getElementById('result-nisn').innerText = userData.nisn;
+            document.getElementById('result-score').innerText = finalScore;
+            document.getElementById('result-detail').innerText = `Jumlah soal benar: ${correctCount} dari 3 soal.`;
+        }
+    </script>
+</body>
+</html>
